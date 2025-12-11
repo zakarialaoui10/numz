@@ -1,7 +1,7 @@
 {
   "name": "sizio",
   "version": "0.0.0",
-  "description": "",
+  "description": "scientific computing with zikojs",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -24,6 +24,6 @@
     "rollup": "^4.24.0"
   },
   "dependencies": {
-    "ziko": "^0.0.20"
+    "ziko": "^0.54.1"
   }
 }
