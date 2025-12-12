@@ -1,6 +1,6 @@
 {
   "name": "numz",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "scientific computing with zikojs",
   "main": "index.js",
   "type": "module",
@@ -29,6 +29,6 @@
     "rollup": "^4.24.0"
   },
   "dependencies": {
-    "ziko": "^0.54.2"
+    "ziko": "^0.54.4"
   }
 }

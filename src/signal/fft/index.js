@@ -1,20 +1,24 @@
-function fft1d(arr) {
+import { Complex } from 'ziko/math/complex' 
+import {add, sub} from 'ziko/math/functions/arithmetic'
+export function fft1d(arr) {
     const N = arr.length;
     if (N === 1) return [arr[0]];
 
     const even = fft1d(arr.filter((_, i) => i % 2 === 0));
     const odd  = fft1d(arr.filter((_, i) => i % 2 === 1));
+    
+
 
     const out = new Array(N);
     for (let k = 0; k < N/2; k++) {
-        const t = Complex.Twiddle(N, k).mul(odd[k]);
-        out[k]        = even[k].add(t);
-        out[k + N/2]  = even[k].sub(t);
+        const t = Complex.Twidlle(N, k).mul(odd[k]);
+        out[k]        = add(even[k], t)
+        out[k + N/2]  = sub(even[k], t)
     }
     return out;
 }
 
-function fftnd(data) {
+export function fftnd(data) {
     if (data instanceof Matrix) data = data.toComplex();
 
     if (Array.isArray(data) && !Array.isArray(data[0])) {
@@ -41,7 +45,7 @@ function fftnd(data) {
     }
 
     if (Array.isArray(data)) {
-        return data.map(fftND);
+        return data.map(fftnd);
     }
 
     throw new Error("Invalid data type for FFT");
