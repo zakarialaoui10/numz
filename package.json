@@ -1,6 +1,6 @@
 {
   "name": "numz",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "scientific computing with zikojs",
   "main": "index.js",
   "type": "module",
