@@ -55,8 +55,8 @@ export const midhinge = (...x) =>{
   return (q1 + q3) / 2;
 }
 
-
-export const interquartile_mean = (...x) =>{
+// interquartile_mean
+export const iq_mean = (...x) =>{
   let a = x.sort((a,b)=>a-b);
   let q1 = a[Math.floor((a.length - 1) * 0.25)];
   let q3 = a[Math.floor((a.length - 1) * 0.75)];

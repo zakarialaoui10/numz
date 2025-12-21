@@ -1,8 +1,18 @@
 import { mapfun, nthr, pow } from "ziko/math/functions";
+import { Matrix } from 'ziko/math/matrix'
 
-export const zeros = n => new Array(n).fill(0);
-export const ones = n => new Array(n).fill(1);
-export const nums = (n, num) => new Array(n).fill(num);
+export const zeros = (n, m, d) => {
+    if(m) return Matrix.zeros(n, m);
+    return new Array(n).fill(0)
+}
+export const ones = (n, m) => {
+     if(m) return Matrix.ones(n, m);
+    return new Array(n).fill(1)   
+};
+export const nums = (num, n, m, d) => {
+     if(m) return Matrix.nums(n, m);
+    return new Array(n).fill(num)   
+};
 
 
 export const arange = (a, b, step, include = false) => {  
