@@ -1,9 +1,12 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import starlightGitHubAlerts from 'starlight-github-alerts'
+import starlightThemeObsidian from 'starlight-theme-obsidian'
+
 
 const referenceModules = [
-	'ufunc', 
+	'functions', 
 	'matrix',
 	'complex',
 	'signal', 
@@ -16,7 +19,16 @@ const referenceModules = [
 export default defineConfig({
 	integrations: [
 		starlight({
-			title: 'Numz',
+			title: 'NumZ',
+			plugins: [
+				starlightThemeObsidian({
+					graph: false
+				})
+				// starlightGitHubAlerts(),
+			],
+			customCss: [
+				'./src/styles/custom.css',
+			],
 			social: [
 				{ 
 					icon: 'github', 

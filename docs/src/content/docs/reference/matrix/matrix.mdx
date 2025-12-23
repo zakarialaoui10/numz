@@ -1,8 +1,8 @@
 ---
-title: matrix
+title: Matrix
 description: matrix
-# sidebar:
-#     order : 0
+sidebar:
+    label : matrix
 ---
 
 import { Tabs, TabItem } from '@astrojs/starlight/components';
@@ -31,8 +31,8 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
 - `Matrix.eye(r, c)` : Creates an `r × c` identity matrix (ones on the diagonal, zeros elsewhere).  
   If `r !== c`, creates a rectangular diagonal matrix.
 - `Matrix.nums(num : number|complex, r, c)` : Creates an r × c matrix filled with the specified value num, which can be a real or complex number.
-- `Matrix.fromArray()` : To Do 
-
+- `Matrix.random.int(min, max)`
+- `Matrix.random.float(min, max)`
 
 ## Indexing
 
@@ -42,6 +42,7 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
 ## Reshape
 
 - `.reshape(r, c)` : Reshapes the matrix to `(r × c)` without changing the total number of elements.
+- `.reshape(r0, c0, r1, c1)` : 
 - `.hstack(...matrices: Matrix[])` : Horizontally stacks matrices by columns (same number of rows required).
 - `.vstack(...matrices: Matrix[])` : Vertically stacks matrices by rows (same number of columns required).
 - `.hqueue(...matrices: Matrix[])` : Appends matrices horizontally, preserving row order (row-wise concatenation).
@@ -66,11 +67,8 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
 - `.norm(min, max)` : Normalizes matrix values to the range `[min, max]`.
 - `.clamp(min, max)` : Clamps matrix values so that all elements lie within the range `[min, max]`.
 - `.shuffle()` : Randomly shuffles the elements of the matrix (element-wise), preserving its shape.
-
-To Do : 
 - `.shuffleRows()` : Randomly shuffles the **rows** of the matrix, keeping the order of elements within each row intact.
 - `.shuffleCols()` : Randomly shuffles the **columns** of the matrix, keeping the order of elements within each column intact.
-
 
 ## Getters
 
@@ -88,6 +86,7 @@ To Do :
 |Checker|Description|
 |-|-|
 | `.isMatrix()` |  |
+| `.haComplex()` |  |
 | `.isSquare()` | Checks whether the matrix has the same number of rows and columns. |
 | `.isSym()` | Checks whether the matrix is symmetric (`A = Aᵀ`). |
 | `.isAntiSym()` | Checks whether the matrix is antisymmetric (`A = -Aᵀ`). |

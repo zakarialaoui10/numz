@@ -3,6 +3,7 @@ title: about
 description: about
 # sidebar:
 #     order : 0
+tableOfContents: false
 ---
 
 Hello world;
