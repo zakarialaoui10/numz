@@ -13,7 +13,7 @@ export const square = (t, T = 1, A = 1, duty = 0.5, t0 = 0) => {
 };
 
 // Triangle wave: amplitude A, period T, duty cycle, centered at t0
-export const triangle = (t, T = 1, A = 1, duty = 0.5, t0 = 0) => {
+export const tri_wave = (t, T = 1, A = 1, duty = 0.5, t0 = 0) => {
     const f = (v) => {
         const phase = ((v - t0) % T + T) % T;
         if (phase < duty * T) {
@@ -27,7 +27,7 @@ export const triangle = (t, T = 1, A = 1, duty = 0.5, t0 = 0) => {
 };
 
 // Sawtooth wave: amplitude A, period T, duty cycle, centered at t0
-export const sawtoothPeriodic = (t, T = 1, A = 1, duty = 1, t0 = 0) => {
+export const sawtooth_wave = (t, T = 1, A = 1, duty = 1, t0 = 0) => {
     const f = (v) => {
         const phase = ((v - t0) % T + T) % T;
         if (phase < duty * T) {
@@ -41,7 +41,7 @@ export const sawtoothPeriodic = (t, T = 1, A = 1, duty = 1, t0 = 0) => {
 };
 
 // Pulse train: amplitude A, period T, pulse width, centered at t0
-export const pulseTrain = (t, T = 1, width = 0.5, A = 1, t0 = 0) => {
+export const pulse_train = (t, T = 1, width = 0.5, A = 1, t0 = 0) => {
     const f = (v) => {
         const phase = ((v - t0) % T + T) % T;
         return phase < width ? A : 0;

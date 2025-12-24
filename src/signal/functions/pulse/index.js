@@ -6,7 +6,7 @@ export const signum = (t, t0 = 0, A = 1) => {
 };
 
 // Ramp function
-export const rampe = (t, t0 = 0, A = 1) => {
+export const ramp = (t, t0 = 0, A = 1) => {
     if (Array.isArray(t)) return t.map(v => v < t0 ? 0 : A * (v - t0));
     return t < t0 ? 0 : A * (t - t0);
 };
@@ -59,14 +59,14 @@ export const sinc = (t, t0 = 0, A = 1) => {
 
 
 // Gaussian pulse
-export const gaussian = (t, t0 = 0, sigma = 1, A = 1) => {
+export const gaussian_pulse = (t, t0 = 0, sigma = 1, A = 1) => {
     const f = (v) => A * Math.exp(-((v - t0) ** 2) / (2 * sigma ** 2));
     if (Array.isArray(t)) return t.map(f);
     return f(t);
 };
 
 // Exponential pulse (causal)
-export const expPulse = (t, t0 = 0, alpha = 1, A = 1) => {
+export const exp_pulse = (t, t0 = 0, alpha = 1, A = 1) => {
     const f = (v) => (v >= t0 ? A * Math.exp(-alpha * (v - t0)) : 0);
     if (Array.isArray(t)) return t.map(f);
     return f(t);

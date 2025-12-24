@@ -109,7 +109,6 @@ export const gaussian_window = (N, sigma = 0.4, ArrayType = Float64Array) => {
   return w;
 };
 
-
 const sinc = (x) => x === 0 ? 1 : sin(PI * x) / (PI * x);
 export const lanczos_window = (N, ArrayType = Float64Array) => {
   const w = new ArrayType(N);
