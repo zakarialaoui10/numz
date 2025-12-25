@@ -1,6 +1,6 @@
 ---
-title: about
-description: about
+title: checkers
+description: checkers
 # sidebar:
 #     order : 0
 tableOfContents: false
