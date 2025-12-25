@@ -9,7 +9,8 @@ export const typed_matrix_constructor = (rows, cols, arr, type = Float32Array) =
     return [
         rows,
         cols, 
-        arr
+        arr,
+        type
     ]
   }
   if(rows instanceof Array){
@@ -23,7 +24,8 @@ export const typed_matrix_constructor = (rows, cols, arr, type = Float32Array) =
     return [
       r,
       c,
-      arr
+      arr,
+      type
     ]
   }
 };

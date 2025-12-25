@@ -1,18 +1,23 @@
 import { 
     typed_matrix_constructor,
+    maintain_indexes,
     maintain_arr,
     hstack,
     vstack,
-    arithmetic
+    arithmetic,
+    typed_matrix_dot,
+    typed_matrix_det,
+    typed_matrix_rank,
 } from './helpers/index.js'
 export class AbstractTypedMatrix{
     constructor(rows, cols, arr, type){
         [
             this.rows,
             this.cols,
-            this.data
+            this.data,
+            this.type
         ] = typed_matrix_constructor(rows, cols, arr, type);
-        maintain_arr(this) 
+        maintain_indexes(this)
     }
     isMatrix(){
         return true;
@@ -23,14 +28,21 @@ export class AbstractTypedMatrix{
     clone(){
         return new this.constructor(this.rows, this.cols, this.data, this.type);
     }
-    get type(){
-        return this.data.constructor;
-    }
     get size(){
         return this.rows * this.cols;
     }
     get shape(){
         return [this.rows, this.cols]
+    }
+    get arr(){
+        const arr = new Array(this.rows);
+        for(let i = 0; i < this.rows; i++){
+            const arr_col = new this.type(this.cols);
+            for(let j = 0; j < this.cols; j++)
+                arr_col[j] = this.data[i * this.cols + j]
+            arr[i] = arr_col
+        }
+        return arr;
     }
     at(i, j){
         if(i < 0) i += this.rows;
@@ -41,11 +53,31 @@ export class AbstractTypedMatrix{
         if(j < 0 || j >= this.cols) throw new Error('Column index out of bounds');
         return this.data[i * this.cols + j];
     }
+    [Symbol.iterator](){
+        return this.arr[Symbol.iterator]
+    }
+    serialize(){
+        return JSON.stringify({
+            type : 'TypedMatrix',
+            data : {
+                rows : this.rows,
+                cols : this.cols,
+                t : this.type.name,
+                arr : [...this.data]
+            }
+        })
+    }
+    static deserialize(json){
+        const {type, data} = JSON.parse(json);
+        const {rows, cols, arr, t} = data
+        return new this(rows, cols, arr, globalThis[t])
+    }
     reshape(newRows, newCols){
         if(!(newRows * newCols === this.rows * this.cols)) throw Error('size not matched');
+        const oldRows = this.rows;
         this.rows = newRows;
         this.cols = newCols;
-        maintain_arr(this);
+        maintain_indexes(this, oldRows)
         return this;
     }
     get T(){
@@ -56,17 +88,37 @@ export class AbstractTypedMatrix{
                 transpose[i * this.rows + j] = this.data[j * this.rows + i]
         }
         [this.cols, this.rows] = this.shape;
-        maintain_arr(this)
         return this
+    }
+    get det(){
+        return + typed_matrix_det(this).toFixed(14)
+    }
+    get rank(){
+        return typed_matrix_rank(this)
+    }
+    static zeros(rows, cols){
+        return new this(rows, cols, new Array(rows * cols).fill(0), this.type)
+    }
+    static ones(rows, cols){
+        return new this(rows, cols, new Array(rows * cols).fill(1), this.type)
+    }
+    static nums(rows, cols, num){
+        return new this(rows, cols, new Array(rows * cols).fill(num), this.type)
+    }
+    static eye(n){
+        const data = new this.type(n * n);
+        let i, j;
+        for(i = 0; i < n; i++)
+            for(j = 0; j <n; j++)
+                data[i * n + j] = i === j ? 1 : 0
+        return new this(n, n, data);
     }
     toPrecesion(p){
         this.data = this.data.map(n => n.toPrecesion(p));
-        maintain_arr(this) 
         return this;
     }
     toFixed(p){
         this.data = this.data.map(n => n.toFixed(p));
-        maintain_arr(this) 
         return this;
     }
     hstack(...matrices){
@@ -83,6 +135,7 @@ export class AbstractTypedMatrix{
             [this, ...matrices].reduce((a, b) => vstack(a, b))
         );
         maintain_arr(this);
+        maintain_indexes(this, this.rows);
         return this;
     }
     hqueue(...matrices){
@@ -99,6 +152,7 @@ export class AbstractTypedMatrix{
             [this, ...matrices].reverse().reduce((a,b)=>vstack(a, b))
         );
         maintain_arr(this);
+        maintain_indexes(this, this.rows);
         return this;
     }
     forEach(fn){
@@ -167,6 +221,10 @@ export class AbstractTypedMatrix{
             (a, b) => a % b,
             ...M 
         )
+    }
+    dot(...M){
+       typed_matrix_dot(this, ...M)
+       return this
     }
 
 }

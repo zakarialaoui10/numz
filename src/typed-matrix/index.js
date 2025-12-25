@@ -17,11 +17,11 @@ export class I32Matrix extends AbstractIntMatrix{
         super(rows, cols, data, Int32Array)
     }
 }
-export class I64Matrix extends AbstractIntMatrix{
-    constructor(rows, cols, data){
-        super(rows, cols, data, Int64Array)
-    }
-}
+// export class I64Matrix extends AbstractIntMatrix{
+//     constructor(rows, cols, data){
+//         super(rows, cols, data, Int64Array)
+//     }
+// }
 
 export class U8Matrix extends AbstractIntMatrix{
     constructor(rows, cols, data){
@@ -55,6 +55,7 @@ export class F32Matrix extends AbstractFloatMatrix{
     }
 }
 export class F64Matrix extends AbstractFloatMatrix{
+    static type = Float64Array
     constructor(rows, cols, data){
         super(rows, cols, data, Float64Array)
     }

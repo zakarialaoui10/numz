@@ -6,7 +6,7 @@ export function hstack(M1, M2){
     const data = new M1.type(M1.size + M2.size)
     data.set(M1.data, 0)
     data.set(M2.data, M1.data.length)
-    return new M1.constructor(M1.rows, M1.cols + M2.cols, data)
+    return new M1.constructor(M1.rows, M1.cols + M2.cols, data);
 }
 
 export function vstack(M1, M2){
