@@ -6,8 +6,9 @@ import starlightThemeObsidian from 'starlight-theme-obsidian'
 
 
 const referenceModules = [
+	'typed-matrix',
 	'functions', 
-	'matrix',
+	// 'matrix',
 	'complex',
 	'signal', 
 	'stats',

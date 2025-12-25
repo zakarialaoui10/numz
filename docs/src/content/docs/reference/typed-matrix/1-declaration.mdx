@@ -1,0 +1,65 @@
+---
+title: declaration
+description: about
+tableOfContents: false
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+## Matrix Constructor
+
+<Tabs>
+  <TabItem label="Class Constructor">
+    - `new [Type]Matrix(r, c, arr: (number)[])` : Creates an `r × c` matrix using the provided **array of numbers**.
+    - `new [Type]Matrix(m : [Type]Matrix)` :  Creates a **copy** of an existing `[Type]Matrix`.
+    - `new [Type]Matrix(arr : (number)[][])` : Creates a matrix from a **2-dimensional array**. The number of rows and columns
+      is inferred from the array shape.
+    ### Example
+    ```js
+    const M1 = new I8Matrix(3, 3, [1, 2, 3, -4, -5, 6, 7, 8, 9])
+    const M2 = new I8Matrix(M1)
+    const M3 = new F32Matrix([
+                  [1.3, 1.2], 
+                  [-3.7, 2.75]
+                ])
+    ```
+  </TabItem>
+  <TabItem label="Functional Constructors">
+    - `matrix_[type](r, c, arr: (number)[])` : Functional version of the constructor that creates an `r × c` matrix from a flat array.
+
+    - `matrix_[type](m : [Type]Matrix)` : Functional copy of an existing `[Type]Matrix`.
+    - `matrix_[type](arr : (number)[])` : Functional constructor that creates a matrix from a **2-dimensional array**.
+    ### Example
+    ```js
+    const M1 = matrix_i8(3, 3, [1, 2, 3, -4, -5, 6, 7, 8, 9])
+    const M2 = matrix_i8(M1)
+    const M3 = matrix_f32([
+                  [1.3, 1.2], 
+                  [-3.7, 2.75]
+                ])
+    ```
+  </TabItem>
+</Tabs>
+
+## Static Factory Methods
+
+All TypedMatrix classes (`F16Matrix`, `F32Matrix`, `F64Matrix`, `I8Matrix`, etc.) provide
+the following **static factory methods** for convenient construction:
+
+- `[Type]Matrix.zeros(r, c)` : Creates an `r × c` matrix filled with zeros.
+- `[Type]Matrix.ones(r, c)` : Creates an `r × c` matrix filled with ones.
+- `[Type]Matrix.eye(n)` : Creates an `n × n` identity matrix (ones on the diagonal, zeros elsewhere).  
+- `[Type]Matrix.nums(r, c, num : number)` : Creates an r × c matrix filled with the specified value num
+- `Matrix.random.int(min, max)`
+- `Matrix.random.float(min, max)`
+
+### Example
+
+```js
+ const M1 = F64Matrix.zeros(2,7)
+ const M2 = U32Matrix.ones(4,5)
+ const M3 = I32Matrix.eye(4)
+ const M4 = F32Matrix.nums(3, 3, -1.25)
+ const M5 = I16Matrix.random.int(-7, 7)
+ const M6 = F32Matrix.random.float(-7, 7)
+```
