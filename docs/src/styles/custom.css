@@ -2,13 +2,20 @@
   --sl-content-width: 50rem;
   --sl-text-5xl: 3.5rem;
 }
-
 h1{
-    color : darkblue;
-    /* text-decoration: 2px underline blueviolet;
-    text-decoration-skip-ink: auto; */
-    /* border-bottom: 1px red solid; */
+    color : var(--sl-color-accent-high);
 }
+h2{
+    color : var(--slsg-node-color-7);
+}
+h3{
+    color : var(--slsg-node-color-8);  
+
+}
+
+/* a, summary span{
+    color: var(--sl-color-accent-lows);
+} */
 p a{
     color: blueviolet;
     text-decoration: none;
@@ -16,6 +23,10 @@ p a{
         text-decoration: underline;
     }
 }
-/* strong{
-    color: blueviolet;
+strong{
+    color: var(--slsg-node-color-8);
+}
+
+/* #starlight__sidebar li, .group-label span{
+    color: gray;
 } */

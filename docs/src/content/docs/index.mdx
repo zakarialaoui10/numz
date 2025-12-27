@@ -5,9 +5,9 @@ template: splash # Remove or comment out this line to display the site sidebar o
 hero:
   tagline: Scientific computation with zikojs
   image:
-    file: ../../assets/houston.webp
+    file: ../../assets/logo.png
   actions:
-    - text: Example Guide
+    - text: Read the docs
       link: /guides/example/
       icon: right-arrow
     - text: Read Zikojs docs
@@ -18,23 +18,49 @@ hero:
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## Next steps
+## Features overview
 
 <CardGrid stagger>
-	<Card title="Update content" icon="pencil">
-		Edit `src/content/docs/index.mdx` to see this page change.
+	<Card title="Extended Array Programming">
+		Numz brings NumPy-like array programming to JavaScript with native, flexible data structures.
+		- Preserves original structure and types
+		- No manual loops or recursion required
 	</Card>
-	<Card title="Change page layout" icon="document">
-		Delete `template: splash` in `src/content/docs/index.mdx` to display a
-		sidebar on this page.
+	<Card title="Built on the top of zikojs">
+	    Numz fully supports and extends core **ZikoJS data types**.
+		- Extend mathematical utilities and functions
+		- Supoorts : 
+			- Complex numbers
+			- Matrices
+			- ...
 	</Card>
-	<Card title="Add new content" icon="add-document">
-		Add Markdown or MDX files to `src/content/docs` to create new pages.
+	<Card title="Typed Matrices">
+		High-performance matrix types backed by TypedArrays.
+		- Arithmetic operations 
+		- Reshape
+		- Serialization / deserialization
+		- ...
 	</Card>
-	<Card title="Configure your site" icon="setting">
-		Edit your `sidebar` and other config in `astro.config.mjs`.
+	<Card title="Signal Processing">
+	Built-in tools for discrete signals and DSP :
+	- Sequences
+	- Pulses
+	- Windows
+	- Convolution
+	- FFT
+	- ...
 	</Card>
-	<Card title="Read the docs" icon="open-book">
-		Learn more in [the Starlight Docs](https://starlight.astro.build/).
+	  <Card title="Advanced Statistics Utilities">
+    A comprehensive statistics toolbox designed for large datasets and numerical analysis.
+
+    - Descriptive statistics (mean, median, mode, variance, std)  
+    - Reductions (min, max, sum, product)  
+    - Percentiles and quantiles  
+    - Covariance and correlation  
+	- Distributions
+  </Card>
+	<Card title="Modular & Composable">
+	- Tree-shakable modules
+	- Easy integration with other libraries
 	</Card>
 </CardGrid>

@@ -37,12 +37,12 @@ export default defineConfig({
 					href: 'https://github.com/zakarialaoui10/numz.git' 
 				}],
 			sidebar: [
-				{
-					label: 'Guides',
-					items: [
-						{ label: 'Example Guide', slug: 'guides/example' },
-					],
-				},
+				// {
+				// 	label: 'Guides',
+				// 	items: [
+				// 		{ label: 'Example Guide', slug: 'guides/example' },
+				// 	],
+				// },
 				{
 					label : 'philosophy',
 					slug : 'philosophy'
