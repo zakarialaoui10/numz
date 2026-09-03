@@ -1,6 +1,6 @@
 export * from './ufunc/index.js'
+export * from './random/index.js'
+export * from './complex/index.js'
 export * from './calculus/index.js'
 export * from './signal/index.js'
 export * from './stats/index.js'
-export * from './complex/index.js'
-
