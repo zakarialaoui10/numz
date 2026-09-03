@@ -1,4 +1,4 @@
-import { Complex } from 'ziko/math/complex';
+import { Complex } from '../../complex/index.js' 
 import { fft, dft } from './fft.js'; 
 import { isPow2 } from './utils/index.js';
 

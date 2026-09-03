@@ -1,4 +1,4 @@
-import { Complex } from 'ziko/math/complex' 
+import { Complex } from '../../complex/index.js' 
 import { isPow2 } from './utils/index.js';
 
 export function dft(arr) {

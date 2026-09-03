@@ -1,6 +1,6 @@
 {
   "name": "numz",
-  "version": "0.6.0",
+  "version": "0.10.1",
   "description": "scientific computing with zikojs",
   "main": "index.js",
   "type": "module",
@@ -26,9 +26,9 @@
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-terser": "^1.0.0",
     "cross-env": "^10.1.0",
-    "rollup": "^4.63.0"
+    "rollup": "^4.63.1"
   },
   "dependencies": {
-    "ziko": "^1.10.0"
+    "ziko": "^2.0.0-alpha.0"
   }
 }
