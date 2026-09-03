@@ -5,7 +5,7 @@ import {
     lerp,
     clamp,
     norm,
-} from 'ziko/math/functions'
+} from 'ziko/math/utils'
 export class AbstractFloatMatrix extends AbstractIntMatrix{
     constructor(rows, cols, data, type){
         super(rows, cols, data, type)

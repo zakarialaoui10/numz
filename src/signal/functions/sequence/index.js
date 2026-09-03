@@ -1,5 +1,6 @@
-import { mapfun, nthr, pow } from "ziko/math/functions";
-import { Matrix } from 'ziko/math/matrix'
+import { mapfun } from "ziko/math/mapfun";
+import { nthr, pow } from '../../../ufunc/index.js'
+import { Matrix } from '../../../matrix/index.js'
 
 export const zeros = (n, m, d) => {
     if(m) return Matrix.zeros(n, m);
