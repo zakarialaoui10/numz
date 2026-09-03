@@ -3,6 +3,45 @@ Scientific computing in [zikojs](https://github.com/zakarialaoui10/zikojs)
 
 ## API Reference
 
+<section style="width: 50%">
+
+```mermaid
+treeView-beta
+    Numz Modules :::highlight
+        ufunc
+        random
+        complex
+        matrix
+        typed-matrix
+        signal
+            conv
+            fft
+            ufunc
+                periodic
+                pulse
+                sequence
+                window
+        stats
+            accum
+            average
+            dist
+            percentile
+            rolling
+            variability
+        calculus
+            derivative
+            integral
+        discret
+            bitwise
+                conversions
+                operations
+                algorithms
+            combination
+            permutation
+            sequences
+```
+</section>
+
 ### Typed Matrix 
 - Class Constructors : `I8Matrix`, `I16Matrix`, `I32Matrix`,`U8Matrix`, `U16Matrix`, `U32Matrix`, `F16Matrix`, `F32Matrix`, `F64Matrix`, `BI64Matrix`, `BU64Matrix`
 - Functional Constrcuctors : `matrix_i8`, `matrix_i16`, `matrix_i32`, `matrix_u8`, `matrix_u16`, `matrix_u32`, `matrix_f16`, `matrix_f32`, `matrix_f64`, `matrix_bi64`, `matrix_bu64`,
