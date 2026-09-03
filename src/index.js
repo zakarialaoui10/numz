@@ -3,6 +3,8 @@ export * from './random/index.js'
 export * from './complex/index.js'
 export * from './matrix/index.js'
 export * from './typed-matrix/index.js'
+export * from './discret/bitwise/index.js'
 export * from './calculus/index.js'
 export * from './signal/index.js'
 export * from './stats/index.js'
+

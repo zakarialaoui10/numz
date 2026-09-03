@@ -1,4 +1,4 @@
-// import { base2base } from "../../../dep/--from-ziko/functions/conversions/index.js";
+import { base2base } from "../discret/bitwise/conversions/index.js";
 import { accum_sum } from "../stats";
 
 export class Random {
