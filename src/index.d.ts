@@ -1,1 +1,5 @@
+export type * from './ufunc/index.d.ts'
+export type * from './random/index.d.ts'
+// export type * from './matrix/index.d.ts'
 export type * from './calculus/index.d.ts'
+export type * from './stats/index.d.ts'

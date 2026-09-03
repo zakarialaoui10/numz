@@ -1,6 +1,3 @@
-// ------------------------------
-// Multivariate Distributions
-// ------------------------------
 export const dist_multinomial = (kArray, n, pArray) => {
     const factorial = (x) => (x <= 1 ? 1 : x * factorial(x - 1));
     const comb = factorial(n) / kArray.reduce((acc, k) => acc * factorial(k), 1);

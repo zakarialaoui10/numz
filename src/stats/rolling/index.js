@@ -1,4 +1,3 @@
-// Simple Moving Average
 export const sma = (X, w) =>{
   let r = [];
   for (let i = 0; i <= X.length - w; i++) {
@@ -9,7 +8,6 @@ export const sma = (X, w) =>{
   return r;
 }
 
-// exponential Moving Average
 export const ema = (X, alpha) =>{
   let r = [], prev = X[0];
   r.push(prev);
