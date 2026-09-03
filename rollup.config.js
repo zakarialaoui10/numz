@@ -2,8 +2,8 @@ import resolve from "@rollup/plugin-node-resolve";
 import commonjs from '@rollup/plugin-commonjs';
 import terser from "@rollup/plugin-terser";
 
-const Addon_name = "ziko-math-signal";
-const NamedExport = "ZMS"
+const Addon_name = "numz";
+const NamedExport = "Numz"
 const Author = "";
 
 const banner = `

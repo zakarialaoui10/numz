@@ -1,5 +1,5 @@
-import { Complex } from 'ziko/math/complex';
-import { add, mul} from 'ziko/math/functions'
+import { Complex } from '../../complex/index.js';
+import { add, mul} from 'ziko/math/arithmetic'
 
 // const nextPow2 = n => 1 << Math.ceil(Math.log2(n));
 

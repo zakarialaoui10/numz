@@ -1,5 +1,5 @@
 import { add, sub, mul } from "ziko/math/arithmetic";
-import { pow } from "../../functions/index.js";
+import { pow } from "../../ufunc/index.js";
 export function matrix_det(M) {
     if (!M.isSquare) return new Error("is not square matrix");
     if (M.rows == 1) return M.arr[0][0];
