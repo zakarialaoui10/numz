@@ -27,11 +27,14 @@ export const weighted_std = (X, weights) => Math.sqrt(weighted_variance(X, weigh
 
 export const rolling_variance = (X, windowSize) => {
   if (windowSize < 1 || X.length < windowSize) return [];
-  let result = [];
+
+  const result = [];
+
   for (let i = 0; i <= X.length - windowSize; i++) {
     const w = X.slice(i, i + windowSize);
-    result.push(sample_variance(w)); // usually sample variance for rolling
+    result.push(sample_variance(...w));
   }
+
   return result;
 };
-export const rolling_std = (X, windowSize) => Math.sqrt(rolling_variance(X, windowSize));
+export const rolling_std = (X, windowSize) => rolling_variance(X, windowSize).map(Math.sqrt);
