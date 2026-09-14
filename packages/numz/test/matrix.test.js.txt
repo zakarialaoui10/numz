@@ -1,0 +1,775 @@
+import {describe,expect,it} from "vitest"
+import {Matrix,matrix,matrix2,matrix3,matrix4} from "numz/matrix"
+import {Complex,complex} from "numz/complex"
+
+const M=(rows,cols,arr)=>new Matrix(rows,cols,arr)
+
+const expectMatrix=(m,rows,cols,arr)=>{
+    expect(m).toBeInstanceOf(Matrix)
+    expect(m.rows).toBe(rows)
+    expect(m.cols).toBe(cols)
+    expect(m.arr).toEqual(arr)
+}
+
+describe("Matrix",()=>{
+    describe("constructor",()=>{
+        it("creates a matrix",()=>{
+            const m=M(2,3,[1,2,3,4,5,6])
+            expectMatrix(m,2,3,[
+                [1,2,3],
+                [4,5,6]
+            ])
+        })
+
+        it("creates square matrices with helpers",()=>{
+            expect(matrix2(1,2,3,4).shape).toEqual([2,2])
+            expect(matrix3(...Array.from({length:9},(_,i)=>i)).shape).toEqual([3,3])
+            expect(matrix4(...Array.from({length:16},(_,i)=>i)).shape).toEqual([4,4])
+        })
+
+        it("reports size and shape",()=>{
+            const m=M(2,3,[1,2,3,4,5,6])
+            expect(m.size).toBe(6)
+            expect(m.shape).toEqual([2,3])
+        })
+
+        it("is recognized as Matrix",()=>{
+            expect(M(2,2,[1,2,3,4]).isMatrix()).toBe(true)
+        })
+    })
+
+    describe("clone",()=>{
+        it("creates an independent copy",()=>{
+            const m=M(2,2,[1,2,3,4])
+            const c=m.clone()
+
+            expect(c).not.toBe(m)
+            expect(c.arr).toEqual(m.arr)
+
+            c.arr[0][0]=99
+            expect(m.at(0,0)).toBe(1)
+        })
+    })
+
+    describe("at",()=>{
+        const m=M(2,3,[1,2,3,4,5,6])
+
+        it("gets a row",()=>{
+            expect(m.at(0)).toEqual([1,2,3])
+        })
+
+        it("gets an element",()=>{
+            expect(m.at(1,2)).toBe(6)
+        })
+
+        it("supports negative row indexes",()=>{
+            expect(m.at(-1,0)).toBe(4)
+        })
+
+        it("supports negative column indexes",()=>{
+            expect(m.at(0,-1)).toBe(3)
+        })
+
+        it("throws for invalid row",()=>{
+            expect(()=>m.at(2)).toThrow("Row index out of bounds")
+            expect(()=>m.at(-3)).toThrow("Row index out of bounds")
+        })
+
+        it("throws for invalid column",()=>{
+            expect(()=>m.at(0,3)).toThrow("Column index out of bounds")
+            expect(()=>m.at(0,-4)).toThrow("Column index out of bounds")
+        })
+    })
+
+    describe("transpose",()=>{
+        it("transposes a matrix",()=>{
+            const m=M(2,3,[1,2,3,4,5,6])
+
+            expectMatrix(m.T,3,2,[
+                [1,4],
+                [2,5],
+                [3,6]
+            ])
+        })
+
+        it("does not mutate the original",()=>{
+            const m=M(2,2,[1,2,3,4])
+            const t=m.T
+
+            expect(t).not.toBe(m)
+            expect(m.arr).toEqual([
+                [1,2],
+                [3,4]
+            ])
+        })
+    })
+
+    describe("reshape",()=>{
+        it("reshapes while preserving elements",()=>{
+            const m=M(2,3,[1,2,3,4,5,6])
+
+            m.reshape(3,2)
+
+            expectMatrix(m,3,2,[
+                [1,2],
+                [3,4],
+                [5,6]
+            ])
+        })
+
+        it("throws when the size does not match",()=>{
+            const m=M(2,3,[1,2,3,4,5,6])
+
+            expect(()=>m.reshape(2,2)).toThrow("size not matched")
+        })
+    })
+
+    describe("factory methods",()=>{
+        it("creates zeros",()=>{
+            expectMatrix(
+                Matrix.zeros(2,3),
+                2,3,
+                [[0,0,0],[0,0,0]]
+            )
+        })
+
+        it("creates ones",()=>{
+            expectMatrix(
+                Matrix.ones(2,2),
+                2,2,
+                [[1,1],[1,1]]
+            )
+        })
+
+        it("creates constant matrices",()=>{
+            expectMatrix(
+                Matrix.nums(2,3,7),
+                2,3,
+                [[7,7,7],[7,7,7]]
+            )
+        })
+
+        it("creates identity matrix",()=>{
+            expectMatrix(
+                Matrix.eye(3),
+                3,3,
+                [
+                    [1,0,0],
+                    [0,1,0],
+                    [0,0,1]
+                ]
+            )
+        })
+
+        it("creates a column vector",()=>{
+            expectMatrix(
+                Matrix.fromVector([1,2,3]),
+                3,1,
+                [[1],[2],[3]]
+            )
+        })
+    })
+
+    describe("map",()=>{
+        it("maps every element",()=>{
+            const m=M(2,2,[1,2,3,4])
+
+            const result=m.map(x=>x*2)
+
+            expectMatrix(result,2,2,[
+                [2,4],
+                [6,8]
+            ])
+        })
+
+        it("does not mutate the original",()=>{
+            const m=M(2,2,[1,2,3,4])
+            m.map(x=>x*2)
+
+            expect(m.arr).toEqual([
+                [1,2],
+                [3,4]
+            ])
+        })
+    })
+
+    describe("mapRows",()=>{
+        it("maps rows",()=>{
+            const m=M(2,2,[1,2,3,4])
+
+            m.mapRows(row=>row.map(x=>x*2))
+
+            expect(m.arr).toEqual([
+                [2,4],
+                [6,8]
+            ])
+        })
+    })
+
+    describe("mapCols",()=>{
+        it("maps columns",()=>{
+            const m=M(2,2,[1,2,3,4])
+
+            const result=m.mapCols(col=>col.map(x=>x*10))
+
+            expect(result.arr).toEqual([
+                [10,20],
+                [30,40]
+            ])
+        })
+    })
+
+    describe("forEach",()=>{
+        it("iterates over all elements",()=>{
+            const m=M(2,2,[1,2,3,4])
+            const values=[]
+
+            m.forEach(x=>values.push(x))
+
+            expect(values).toEqual([1,2,3,4])
+        })
+    })
+
+    describe("forEachRow",()=>{
+        it("iterates over rows",()=>{
+            const m=M(2,2,[1,2,3,4])
+            const rows=[]
+
+            m.forEachRow(row=>rows.push(row))
+
+            expect(rows).toEqual([
+                [1,2],
+                [3,4]
+            ])
+        })
+    })
+
+    describe("forEachCol",()=>{
+        it("iterates over columns",()=>{
+            const m=M(2,2,[1,2,3,4])
+            const cols=[]
+
+            m.forEachCol(col=>cols.push(col))
+
+            expect(cols).toEqual([
+                [1,3],
+                [2,4]
+            ])
+        })
+    })
+
+    describe("reduce",()=>{
+        it("reduces all elements",()=>{
+            const m=M(2,2,[1,2,3,4])
+
+            const result=m.reduce((a,b)=>a+b)
+
+            expect(result).toBeInstanceOf(Matrix)
+            expect(result.arr).toEqual([[10]])
+        })
+
+        it("supports an initial value",()=>{
+            const m=M(2,2,[1,2,3,4])
+
+            expect(m.reduce((a,b)=>a+b,10).arr).toEqual([[20]])
+        })
+    })
+
+    describe("reduceRows",()=>{
+        it("reduces each row",()=>{
+            const m=M(2,3,[1,2,3,4,5,6])
+
+            expect(m.reduceRows((a,b)=>a+b).arr).toEqual([
+                [6,15]
+            ])
+        })
+    })
+
+    describe("reduceCols",()=>{
+        it("reduces each column",()=>{
+            const m=M(2,3,[1,2,3,4,5,6])
+
+            expect(m.reduceCols((a,b)=>a+b).arr).toEqual([
+                [5],
+                [7],
+                [9]
+            ])
+        })
+    })
+
+    describe("arithmetic",()=>{
+        const M = () => new Matrix(2, 2, [1, 2, 3, 4]);
+        const B = () => new Matrix(2, 2, [5, 6, 7, 8]);
+
+        it("adds matrices", () => {
+            expect(M().add(B()).arr).toEqual([
+                [6, 8],
+                [10, 12]
+            ]);
+        });
+
+        it("subtracts matrices", () => {
+            expect(M().sub(B()).arr).toEqual([
+                [-4, -4],
+                [-4, -4]
+            ]);
+        });
+
+        it("multiplies by scalar", () => {
+            expect(M().mul(2).arr).toEqual([
+                [2, 4],
+                [6, 8]
+            ]);
+        });
+
+        it("divides by scalar", () => {
+            expect(M().div(2).arr).toEqual([
+                [0.5, 1],
+                [1.5, 2]
+            ]);
+        });
+    })
+
+    describe("dot",()=>{
+        it("performs matrix multiplication",()=>{
+            const a=M(2,3,[1,2,3,4,5,6])
+            const b=M(3,2,[7,8,9,10,11,12])
+
+            expectMatrix(a.dot(b),2,2,[
+                [58,64],
+                [139,154]
+            ])
+        })
+
+        it("supports square multiplication",()=>{
+            const a=M(2,2,[1,2,3,4])
+
+            expect(a.dot(a).arr).toEqual([
+                [7,10],
+                [15,22]
+            ])
+        })
+    })
+
+    describe("pow",()=>{
+        it("raises a matrix to a positive integer power",()=>{
+            const a=M(2,2,[1,2,3,4])
+
+            expect(a.pow(2).arr).toEqual([
+                [7,10],
+                [15,22]
+            ])
+        })
+    })
+
+    describe("sum and prod",()=>{
+        const m=M(2,2,[1,2,3,4])
+
+        it("computes sum",()=>{
+            expect(m.sum()).toBe(10)
+        })
+
+        it("computes product",()=>{
+            expect(m.prod()).toBe(24)
+        })
+    })
+
+    describe("det",()=>{
+        it("computes 2x2 determinant",()=>{
+            expect(M(2,2,[1,2,3,4]).det).toBe(-2)
+        })
+
+        it("computes 3x3 determinant",()=>{
+            expect(
+                M(3,3,[1,2,3,0,1,4,5,6,0]).det
+            ).toBeCloseTo(1)
+        })
+    })
+
+    describe("inv",()=>{
+        it("computes the inverse of a 2x2 matrix",()=>{
+            const result=M(2,2,[1,2,3,4]).inv
+
+            expect(result.arr[0][0]).toBeCloseTo(-2)
+            expect(result.arr[0][1]).toBeCloseTo(1)
+            expect(result.arr[1][0]).toBeCloseTo(1.5)
+            expect(result.arr[1][1]).toBeCloseTo(-0.5)
+        })
+    })
+
+    describe("properties",()=>{
+        it("detects square matrices",()=>{
+            expect(M(2,2,[1,2,3,4]).isSquare()).toBe(true)
+            expect(M(2,3,[1,2,3,4,5,6]).isSquare()).toBe(false)
+        })
+
+        it("detects symmetric matrices",()=>{
+            expect(M(2,2,[1,2,2,3]).isSym()).toBe(true)
+            expect(M(2,2,[1,2,3,4]).isSym()).toBe(false)
+        })
+
+        it("detects diagonal matrices",()=>{
+            expect(M(3,3,[1,0,0,0,2,0,0,0,3]).isDiag()).toBe(true)
+            expect(M(3,3,[1,2,0,0,2,0,0,0,3]).isDiag()).toBe(false)
+        })
+
+        it("detects upper triangular matrices",()=>{
+            expect(M(3,3,[1,2,3,0,4,5,0,0,6]).isUpperTri()).toBe(true)
+        })
+
+        it("detects lower triangular matrices",()=>{
+            expect(M(3,3,[1,0,0,2,3,0,4,5,6]).isLowerTri()).toBe(true)
+        })
+
+        it("detects anti-symmetric matrices",()=>{
+            expect(M(3,3,[0,2,-1,-2,0,3,1,-3,0]).isAntiSym()).toBe(true)
+        })
+
+        it("detects identity as diagonal",()=>{
+            expect(Matrix.eye(3).isDiag()).toBe(true)
+        })
+
+        it("detects orthogonal matrices",()=>{
+            const m=M(2,2,[0,1,1,0])
+            expect(m.isOrtho()).toBe(true)
+        })
+
+        it("detects idempotent matrices",()=>{
+            const m=M(2,2,[1,0,0,0])
+            expect(m.isIdemp()).toBe(true)
+        })
+    })
+
+    describe("min and max",()=>{
+        const m=M(2,3,[4,1,6,2,5,3])
+
+        it("gets minimum",()=>{
+            expect(m.min).toBe(1)
+        })
+
+        it("gets maximum",()=>{
+            expect(m.max).toBe(6)
+        })
+
+        it("gets row minimums",()=>{
+            expect(m.minRows).toEqual([1,2])
+        })
+
+        it("gets row maximums",()=>{
+            expect(m.maxRows).toEqual([6,5])
+        })
+
+        it("gets column minimums",()=>{
+            expect(m.minCols).toEqual([2,1,3])
+        })
+
+        it("gets column maximums",()=>{
+            expect(m.maxCols).toEqual([4,5,6])
+        })
+    })
+
+    describe("filter",()=>{
+        it("filters rows",()=>{
+            const m=M(3,2,[1,2,3,4,5,6])
+
+            expect(m.filterRows(x=>x>4).arr).toEqual([
+                [5,6]
+            ])
+        })
+
+        it("filters columns",()=>{
+            const m=M(2,3,[1,2,3,4,5,6])
+
+            expect(m.filterCols(x=>x>4).arr).toEqual([
+                [3],
+                [6]
+            ])
+        })
+    })
+
+    describe("every and some",()=>{
+        const m=M(2,2,[1,2,3,4])
+
+        it("checks every element",()=>{
+            expect(m.every(x=>x>0)).toBe(true)
+            expect(m.every(x=>x>2)).toBe(false)
+        })
+
+        it("checks some elements",()=>{
+            expect(m.some(x=>x>3)).toBe(true)
+            expect(m.some(x=>x>10)).toBe(false)
+        })
+
+        it("checks rows",()=>{
+            expect(m.everyRow(row=>row.every(x=>x>0))).toEqual([true,true])
+            expect(m.someRow(row=>row.some(x=>x>3))).toEqual([false,true])
+        })
+
+        it("checks columns",()=>{
+            expect(m.everyCol(col=>col.every(x=>x>0))).toEqual([true,true])
+            expect(m.someCol(col=>col.some(x=>x>3))).toEqual([false,true])
+        })
+    })
+
+    describe("stacking",()=>{
+        it("hstack",()=>{
+            const a=M(2,2,[1,2,3,4])
+            const b=M(2,1,[5,6])
+
+            a.hstack(b)
+
+            expectMatrix(a,2,3,[
+                [1,2,5],
+                [3,4,6]
+            ])
+        })
+
+        it("vstack",()=>{
+            const a=M(1,2,[1,2])
+            const b=M(2,2,[3,4,5,6])
+
+            a.vstack(b)
+
+            expectMatrix(a,3,2,[
+                [1,2],
+                [3,4],
+                [5,6]
+            ])
+        })
+
+        it("hqueue reverses matrix order",()=>{
+            const a=M(1,1,[1])
+            const b=M(1,1,[2])
+            const c=M(1,1,[3])
+
+            a.hqueue(b,c)
+
+            expect(a.arr).toEqual([[3,2,1]])
+        })
+
+        it("vqueue reverses matrix order",()=>{
+            const a=M(1,1,[1])
+            const b=M(1,1,[2])
+            const c=M(1,1,[3])
+
+            a.vqueue(b,c)
+
+            expect(a.arr).toEqual([[3],[2],[1]])
+        })
+    })
+
+    describe("flip",()=>{
+        it("flips horizontally",()=>{
+            const m=M(2,3,[1,2,3,4,5,6])
+
+            m.flipeH()
+
+            expect(m.arr).toEqual([
+                [3,2,1],
+                [6,5,4]
+            ])
+        })
+
+        it("flips vertically",()=>{
+            const m=M(2,3,[1,2,3,4,5,6])
+
+            m.flipeV()
+
+            expect(m.arr).toEqual([
+                [4,5,6],
+                [1,2,3]
+            ])
+        })
+
+        it("flips both directions",()=>{
+            const m=M(2,3,[1,2,3,4,5,6])
+
+            m.flip()
+
+            expect(m.arr).toEqual([
+                [6,5,4],
+                [3,2,1]
+            ])
+        })
+    })
+
+    describe("Complex",()=>{
+        it("converts values to Complex",()=>{
+            const m=M(2,2,[1,2,3,4])
+
+            m.toComplex()
+
+            expect(m.hasComplex()).toBe(true)
+            expect(m.arr.flat().every(x=>x instanceof Complex)).toBe(true)
+            expect(m.arr.flat().map(x=>[x.a,x.b])).toEqual([
+                [1,0],
+                [2,0],
+                [3,0],
+                [4,0]
+            ])
+        })
+
+        it("preserves existing Complex values",()=>{
+            const z=complex(2,3)
+            const m=M(1,2,[z,4])
+
+            m.toComplex()
+
+            expect(m.at(0,0)).toBe(z)
+            closeComplex(m.at(0,0),2,3)
+            closeComplex(m.at(0,1),4,0)
+        })
+
+        it("supports Complex arithmetic",()=>{
+            const a=M(1,2,[complex(1,2),complex(3,4)])
+            const b=M(1,2,[complex(1,0),complex(1,0)])
+
+            const result=a.add(b)
+
+            closeComplex(result.at(0,0),2,2)
+            closeComplex(result.at(0,1),4,4)
+        })
+    })
+
+    describe("serialization",()=>{
+        it("serializes a matrix",()=>{
+            const m=M(2,2,[1,2,3,4])
+            const json=m.serialize()
+
+            expect(typeof json).toBe("string")
+
+            const data=JSON.parse(json)
+
+            expect(data.type).toBe("matrix")
+            expect(data.data.rows).toBe(2)
+            expect(data.data.cols).toBe(2)
+        })
+
+        it("deserializes a matrix",()=>{
+            const m=M(2,2,[1,2,3,4])
+            const restored=Matrix.deserialize(m.serialize())
+
+            expectMatrix(restored,2,2,[
+                [1,2],
+                [3,4]
+            ])
+        })
+
+        it("serializes and restores Complex values",()=>{
+            const m=M(1,2,[complex(2,3),4])
+
+            const restored=Matrix.deserialize(m.serialize())
+
+            closeComplex(restored.at(0,0),2,3)
+            expect(restored.at(0,1)).toBe(4)
+        })
+    })
+
+    describe("iterator",()=>{
+        it("iterates over rows",()=>{
+            const m=M(2,2,[1,2,3,4])
+            expect([...m]).toEqual([
+                [1,2],
+                [3,4]
+            ])
+        })
+    })
+
+    describe("precision",()=>{
+        it("applies fixed precision",()=>{
+            const m=M(1,2,[Math.PI,Math.E])
+
+            m.toFixed(3)
+
+            expect(m.arr).toEqual([
+                [3.142,2.718]
+            ])
+        })
+
+        it("applies significant precision",()=>{
+            const m=M(1,2,[123.456,0.00123456])
+
+            m.toPrecision(3)
+
+            expect(m.arr).toEqual([
+                [123,0.00123]
+            ])
+        })
+    })
+
+    describe("range",()=>{
+        it("supports map",()=>{
+            const m=M(1,3,[0,5,10])
+
+            m.range.map(0,10,0,100)
+
+            expect(m.arr).toEqual([
+                [0,50,100]
+            ])
+        })
+
+        it("supports norm",()=>{
+            const m=M(1,3,[0,5,10])
+
+            m.range.norm(0,1)
+
+            expect(m.arr).toEqual([
+                [0,0.5,1]
+            ])
+        })
+
+        it("supports lerp",()=>{
+            const m=M(1,3,[0,0.5,1])
+
+            m.range.lerp(0,10)
+
+            expect(m.arr).toEqual([
+                [0,5,10]
+            ])
+        })
+
+        it("supports clamp",()=>{
+            const m=M(1,4,[-1,2,5,10])
+
+            m.range.clamp(0,5)
+
+            expect(m.arr).toEqual([
+                [0,2,5,5]
+            ])
+        })
+    })
+
+    describe("sorting",()=>{
+        it("sorts all elements",()=>{
+            const m=M(2,2,[4,1,3,2])
+
+            expect(m.sort((a,b)=>a-b).arr).toEqual([
+                [1,2],
+                [3,4]
+            ])
+        })
+
+        it("sorts rows",()=>{
+            const m=M(2,3,[3,1,2,6,4,5])
+
+            m.sortRows((a,b)=>a-b)
+
+            expect(m.arr).toEqual([
+                [1,2,3],
+                [4,5,6]
+            ])
+        })
+
+        it("sorts columns",()=>{
+            const m=M(3,2,[3,6,1,4,2,5])
+
+            const result=m.sortCols((a,b)=>a-b)
+
+            expect(result.arr).toEqual([
+                [1,2],
+                [2,5],
+                [3,6]
+            ])
+        })
+    })
+})

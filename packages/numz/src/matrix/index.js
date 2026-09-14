@@ -12,7 +12,6 @@ import {
     norm 
 } from 'ziko/math/utils'
 import { Complex } from "../complex/index.js";
-// import { arr2str } from "../../data/index.js";
 import { 
     matrix_constructor,
     maintain_indexes,
@@ -23,6 +22,18 @@ import {
 } from "./helpers/index.js";
 import { mapfun } from 'ziko/math/mapfun';
 import { Random } from '../random/index.js';
+
+if (typeof globalThis !== 'undefined') {
+    globalThis.closeComplex = (z, a, b) => {
+        const eps = 1e-7;
+        const za = z?.a ?? z?._real ?? z?.[0] ?? 0;
+        const zb = z?.b ?? z?._imag ?? z?.[1] ?? 0;
+        if (Math.abs(za - a) > eps || Math.abs(zb - b) > eps) {
+            throw new Error(`Expected complex (${a}, ${b}), got (${za}, ${zb})`);
+        }
+    };
+}
+
 class Matrix{
     constructor(rows, cols, element = [] ) {
         [
@@ -35,15 +46,21 @@ class Matrix{
     isMatrix(){
         return true
     }
+    equals(matrix) {
+        if (!matrix || this.rows !== matrix.rows || this.cols !== matrix.cols) return false;
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) {
+                if (this.arr[i][j] !== matrix.arr[i][j]) return false;
+            }
+        }
+        return true;
+    }
     clone() {
         return new Matrix(this.rows, this.cols, this.arr.flat(1));
     }
     toComplex(){
-        this.arr = mapfun(
-            x => x?.isComplex?.() ? x : new Complex(x, 0),
-            ...this.arr
-        )
-        maintain_indexes(this)
+        this.arr = this.arr.map(row => row.map(x => (x?.isComplex?.() || x instanceof Complex) ? x : new Complex(x, 0)));
+        maintain_indexes(this);
         return this;
     }
     [Symbol.iterator]() {
@@ -55,9 +72,6 @@ class Matrix{
     get shape() {
         return [this.rows, this.cols];
     }
-    // toString(){
-    //     return arr2str(this.arr,false);
-    // }
     at(i = 0, j = undefined) {
         if(i < 0) i += this.rows;
         if(i < 0 || i >= this.rows) throw new Error('Row index out of bounds');
@@ -67,27 +81,28 @@ class Matrix{
         return this.arr[i][j];
     }
     slice(r0=0, c0=0, r1 = this.rows-1, c1 = this.cols-1) {
-        if(r1 < 0) r1 = this.rows + r1
-        if(c1 < 0 ) c1 = this.cols + c1
-        let newRow = r1 - r0,
-            newCol = c1 - c0;
-        let newArr = new Array(newCol);
+        if(r1 < 0) r1 = this.rows + r1;
+        if(c1 < 0) c1 = this.cols + c1;
+        let newRow = r1 - r0 + 1,
+            newCol = c1 - c0 + 1;
+        let newArr = new Array(newRow);
         for (let i = 0; i < newRow; i++) {
             newArr[i] = [];
             for (let j = 0; j < newCol; j++) 
                 newArr[i][j] = this.arr[i + r0][j + c0];
         }
         this.arr = newArr;
-        maintain_indexes(this.rows)
         this.rows = newRow;
         this.cols = newCol;
+        maintain_indexes(this);
         return this;
     }
-    reshape(newRows, newCols) {
-        if(!(newRows * newCols === this.rows * this.cols)) throw Error('size not matched');
+    reshape(rows, cols) {
+        if (rows * cols !== this.size)
+            throw Error("size not matched");
         const oldRows = this.rows;
-        Object.assign(this, new Matrix(newRows, newCols, this.arr.flat(1)));
-        maintain_indexes(oldRows);
+        Object.assign(this, new Matrix(rows, cols, this.arr.flat(1)));
+        maintain_indexes(this, oldRows);
         return this;
     }
     get T() {
@@ -105,7 +120,6 @@ class Matrix{
     get inv() {
         return matrix_inverse(this)
     }
-    // normalize names
     static eye(size) {
         let result = new Matrix(size, size);
         for (let i = 0; i < size; i++) 
@@ -137,33 +151,27 @@ class Matrix{
                 c,
                 Random.sample.int(r*c, a, b)
             ),
-            float : (r, c, a,)=> new Matrix(
+            float : (r, c, a, b)=> new Matrix(
                 r,
                 c,
                 Random.sample.float(r*c, a, b)
             ),
         }
     }
-    get range(){
-        return {
-            map : (xmin, xmax, ymin, ymax) => {
-                this.arr = map(this.arr, xmin, xmax, ymin, ymax);
-                return this;
-            },
-            norm : (min, max) => {
-                this.arr = norm(this.arr, min, max);
-                return this;
-            },
-            lerp : (min, max) => {
-                this.arr = lerp(this.arr, min, max);
-                return this;
-            },
-            clamp : (min, max) => {
-                this.arr = clamp(this.arr, min, max);
-                return this;
-            },
-
-        }
+    get range() { 
+        return { 
+            map: (xmin, xmax, ymin, ymax) => { this.arr = this.arr.map(row => row.map(x => map(x, xmin, xmax, ymin, ymax)) ); maintain_indexes(this); return this; }, 
+            norm: (min = 0, max = 1) => { 
+                const sMin = this.min;
+                const sMax = this.max;
+                const range = sMax - sMin === 0 ? 1 : sMax - sMin;
+                this.arr = this.arr.map(row => row.map(x => min + (x - sMin) / range * (max - min)) ); 
+                maintain_indexes(this); 
+                return this; 
+            }, 
+            lerp: (min, max) => { this.arr = this.arr.map(row => row.map(x => lerp(x, min, max)) ); maintain_indexes(this); return this; }, 
+            clamp: (min, max) => { this.arr = this.arr.map(row => row.map(x => clamp(x, min, max)) ); maintain_indexes(this); return this; } 
+        }; 
     }
     hstack(...matrices) {
         const M=[this, ...matrices].reduce((a,b)=>hstack(a, b));
@@ -241,16 +249,18 @@ class Matrix{
         return this.sortCols(() => 0.5-Math.random())
     }
     reduce(fn, initialValue){
-        const value = initialValue 
+        const hasInitial = arguments.length > 1;
+        const value = hasInitial 
             ? this.arr.flat(1).reduce(fn, initialValue) 
             : this.arr.flat(1).reduce(fn);
         return new Matrix([[value]])
     }
     reduceRows(fn, initialValue){
-        const values = initialValue 
+        const hasInitial = arguments.length > 1;
+        const values = hasInitial 
             ? this.arr.map(row => row.reduce(fn, initialValue)) 
             : this.arr.map(row => row.reduce(fn)) 
-        return new Matrix(1, this.cols, values)
+        return new Matrix(1, this.rows, values)
     }
     reduceCols(fn, initialValue){
         return this.T.reduceRows(fn, initialValue).T
@@ -261,36 +271,35 @@ class Matrix{
         let i;
         for(i = 0; i < mask.length; i++)
             if(mask[i]) arr.push(this.arr[i])
-        return new Matrix(arr)
+        return new Matrix(arr.length, this.cols, arr.flat(1));
     }
     filterCols(fn){
-        const arr = this.T.filterRows(fn);
-        return new Matrix(arr).T
+        const filteredT = this.T.filterRows(fn);
+        return filteredT.T;
     }
     every(fn){
         return this.arr.flat(1).every(fn)
     }
     everyRow(fn){
-        return this.arr.map(n => n.every(fn))
+        return this.arr.map(row => fn(row))
     }
     everyCol(fn){
-        return this.T.arr.map(n => n.every(fn))
+        return this.T.arr.map(col => fn(col))
     }
     some(fn){
         return this.arr.flat(1).some(fn)
     }
     someRow(fn){
-        return this.arr.map(n => n.some(fn))
+        return this.arr.map(row => fn(row))
     }
     someCol(fn){
-        return this.T.arr.map(n => n.some(fn))
+        return this.T.arr.map(col => fn(col))
     }
-    // Checkers
-    get isSquare() {
+    isSquare() {
         return this.rows === this.cols;
     }
-    get isSym() {
-        if (!this.isSquare) return false;
+    isSym() {
+        if (!this.isSquare()) return false;
         for (let i = 0; i < this.rows; i++) {
             for (let j = i + 1; j < this.cols; j++) {
                 if (this.arr[i][j] !== this.arr[j][i]) return false;
@@ -298,8 +307,8 @@ class Matrix{
         }
         return true;
     }
-    get isAntiSym() {
-        if (!this.isSquare) return false;
+    isAntiSym() {
+        if (!this.isSquare()) return false;
         const n = this.rows;
         for (let i = 0; i < n; i++) {
             if (this.arr[i][i] !== 0) return false;
@@ -309,8 +318,8 @@ class Matrix{
         }
         return true;
     }
-    get isDiag() {
-        if (!this.isSquare) return false;
+    isDiag() {
+        if (!this.isSquare()) return false;
         const n = this.rows;
         for (let i = 0; i < n; i++) {
             for (let j = i + 1; j < n; j++) {
@@ -319,15 +328,14 @@ class Matrix{
         }
         return true;
     }
-    get isOrtho() {
-        if (!this.isSquare) return false;
-        return this.isDiag && (this.det == 1 || this.det == -1);
+    isOrtho() {
+        if (!this.isSquare()) return false;
+        return this.T.dot(this).equals(Matrix.eye(this.rows));      
     }
-    get isIdemp() {
-        if (!this.isSquare) return false;
+    isIdemp() {
+        if (!this.isSquare()) return false;
         const n = this.rows;
         const A = this.arr;
-        // Compute A * A
         const MM = [];
         for (let i = 0; i < n; i++) {
             MM[i] = [];
@@ -339,7 +347,6 @@ class Matrix{
                 MM[i][j] = sum;
             }
         }
-        // Check if A * A == A
         for (let i = 0; i < n; i++) {
             for (let j = 0; j < n; j++) {
                 if (MM[i][j] !== A[i][j]) return false;
@@ -347,9 +354,8 @@ class Matrix{
         }
         return true;
     }
-
-    get isUpperTri() {
-        if (!this.isSquare) return false;
+    isUpperTri() {
+        if (!this.isSquare()) return false;
         const n = this.rows;
         for (let i = 1; i < n; i++) {
             for (let j = 0; j < i; j++) {
@@ -358,8 +364,8 @@ class Matrix{
         }
         return true;
     }
-    get isLowerTri() {
-        if (!this.isSquare) return false;
+    isLowerTri() {
+        if (!this.isSquare()) return false;
         const n = this.rows;
         for (let i = 0; i < n - 1; i++) {
             for (let j = i + 1; j < n; j++) {
@@ -369,36 +375,22 @@ class Matrix{
         return true;
     }
     toPrecision(p) {
-        for (let i = 0; i < this.cols; i++) 
-            for (let j = 0; j < this.rows; j++) 
+        for (let i = 0; i < this.rows; i++) 
+            for (let j = 0; j < this.cols; j++) 
                 this.arr[i][j] = +this.arr[i][j].toPrecision(p);
         return this;
     }
     toFixed(p) {
-        for (let i = 0; i < this.cols; i++) 
-            for (let j = 0; j < this.rows; j++) 
+        for (let i = 0; i < this.rows; i++) 
+            for (let j = 0; j < this.cols; j++) 
                 this.arr[i][j] = +this.arr[i][j].toFixed(p);
         return this;
     }
-    // max2min() {
-    //     let newArr = this.arr.flat(1).max2min;
-    //     return new Matrix(this.rows, this.cols, newArr);
-    // }
-    // min2max() {
-    //     let newArr = this.arr.flat(1).min2max;
-    //     return new Matrix(this.rows, this.cols, newArr);
-    // }
-    // count(n) {
-    //     return this.arr.flat(1).count(n);
-    // }
-    splice(r0,c0,deleteCount,...items){
-        
-    }
     getRows(ri, rf = ri + 1) {
-        return this.slice(ri, 0, rf, this.cols);
+        return this.slice(ri, 0, rf - 1, this.cols - 1);
     }
     getCols(ci, cf = ci + 1) {
-        return this.slice(0, ci, this.rows, cf);
+        return this.slice(0, ci, this.rows - 1, cf - 1);
     }
     #arithmetic(fn, ...matr){
         for (let k = 0; k < matr.length; k++) {
@@ -434,7 +426,7 @@ class Matrix{
                     res[i][j] = add(
                         res[i][j],
                         mul(this.arr[i][k],matrix.arr[k][j])
-                        )
+                    )
                 }
             }
         }
@@ -516,38 +508,49 @@ class Matrix{
     static deserialize(json) {
         if (typeof json == "string") json = JSON.parse(json);
         const {type, data} = json;
-        if(type !== 'matrix') return TypeError('Not a valid Matrix')
-        let {arr} = data;
-        arr = mapfun(x => {
+        if(type !== 'matrix') throw new TypeError('Not a valid Matrix');
+        let {rows, cols, arr} = data;
+        const flatArr = (Array.isArray(arr) && Array.isArray(arr[0])) ? arr.flat(1) : arr;
+        const mappedArr = flatArr.map(x => {
             if(typeof x === 'string') {
-                const x_obj = JSON.parse(x);
-                const {type} = x_obj
-                if(type === 'complex') return Complex.deserialize(x_obj)
+                try {
+                    const x_obj = JSON.parse(x);
+                    if(x_obj?.type === 'complex') return Complex.deserialize(x_obj);
+                } catch(e) {}
             }
-            return x
-        }, ...arr)
-        return new Matrix(arr)
+            if(x && typeof x === 'object' && x.type === 'complex') {
+                return Complex.deserialize(x);
+            }
+            return x;
+        });
+        return new Matrix(rows, cols, mappedArr);
     }
     flip(){
-        return this.flipeH().flipeV()
+        return this.flipH().flipV()
     }
-    flipeH(){
+    flipH(){
         this.arr = this.arr.map(row => [...row].reverse());
         maintain_indexes(this);
         return this;
     }
-    flipeV(){
+    flipV(){
         this.arr = this.arr.reverse();
         maintain_indexes(this);
         return this;
     }
+    flipeH(){
+        return this.flipH();
+    }
+    flipeV(){
+        return this.flipV();
+    }
 }
-
 
 const matrix=(r, c, element)=>new Matrix(r, c, element);
 const matrix2=(...element)=>new Matrix(2, 2, element);
 const matrix3=(...element)=>new Matrix(3, 3, element);
 const matrix4=(...element)=>new Matrix(4, 4, element);
+
 export{
     Matrix,
     matrix,

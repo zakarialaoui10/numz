@@ -1,5 +1,5 @@
 export function matrix_inverse(M) {
-    if(M.row !== M.cols) throw Error('is not a square matrix"')
+    if(M.rows !== M.cols) throw Error('is not a square matrix"')
     if (M.det === 0) throw Error("determinant should not equal 0");
     const { arr } = M
     if (arr.length !== arr[0].length) return;

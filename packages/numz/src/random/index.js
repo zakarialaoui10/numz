@@ -19,9 +19,9 @@ export class Random {
     static dec(){
         return this.int(10);
     }
-    // static hex(){
-    //     return base2base(this.int(16), 10, 16);
-    // }
+    static hex(){
+        return base2base(this.int(16), 10, 16);
+    }
     static char(upperCase = false){
         const i = upperCase
             ? this.int(65, 91)
@@ -31,46 +31,46 @@ export class Random {
     static bool(){
         return Boolean(this.int(2));
     }
-    static get color(){
-        return {
-            hex : () =>
-                `#${this.int(0xffffff).toString(16).padStart(6, '0')}`,
+    // static get color(){
+    //     return {
+    //         hex : () =>
+    //             `#${this.int(0xffffff).toString(16).padStart(6, '0')}`,
 
-            hexa : () => {
-                const [r,g,b,a] = Array.from(
-                    {length:4},
-                    () => this.int(0xff).toString(16).padStart(2,'0')
-                );
-                return `#${r}${g}${b}${a}`;
-            },
-            rgb : () => {
-                const [r,g,b] = Array.from({length:3}, () => this.int(0xff));
-                return `rgb(${r}, ${g}, ${b})`;
-            },
-            rgba : () => {
-                const [r,g,b] = Array.from({length:3}, () => this.int(0xff));
-                const a = Math.random().toFixed(2);
-                return `rgba(${r}, ${g}, ${b}, ${a})`;
-            },
-            hsl : () => {
-                const h = this.int(360);
-                const s = this.int(100);
-                const l = this.int(100);
-                return `hsl(${h}, ${s}%, ${l}%)`;
-            },
-            hsla : () => {
-                const h = this.int(360);
-                const s = this.int(100);
-                const l = this.int(100);
-                const a = Math.random().toFixed(2);
-                return `hsla(${h}, ${s}%, ${l}%, ${a})`;
-            },
-            gray : () => {
-                const g = this.int(0xff);
-                return `rgb(${g}, ${g}, ${g})`;
-            }
-        };
-    }
+    //         hexa : () => {
+    //             const [r,g,b,a] = Array.from(
+    //                 {length:4},
+    //                 () => this.int(0xff).toString(16).padStart(2,'0')
+    //             );
+    //             return `#${r}${g}${b}${a}`;
+    //         },
+    //         rgb : () => {
+    //             const [r,g,b] = Array.from({length:3}, () => this.int(0xff));
+    //             return `rgb(${r}, ${g}, ${b})`;
+    //         },
+    //         rgba : () => {
+    //             const [r,g,b] = Array.from({length:3}, () => this.int(0xff));
+    //             const a = Math.random().toFixed(2);
+    //             return `rgba(${r}, ${g}, ${b}, ${a})`;
+    //         },
+    //         hsl : () => {
+    //             const h = this.int(360);
+    //             const s = this.int(100);
+    //             const l = this.int(100);
+    //             return `hsl(${h}, ${s}%, ${l}%)`;
+    //         },
+    //         hsla : () => {
+    //             const h = this.int(360);
+    //             const s = this.int(100);
+    //             const l = this.int(100);
+    //             const a = Math.random().toFixed(2);
+    //             return `hsla(${h}, ${s}%, ${l}%, ${a})`;
+    //         },
+    //         gray : () => {
+    //             const g = this.int(0xff);
+    //             return `rgb(${g}, ${g}, ${g})`;
+    //         }
+    //     };
+    // }
     static get sample(){
         const R = this;
         return {
@@ -100,12 +100,12 @@ export class Random {
     static shuffle(arr){
         return [...arr].sort(() => 0.5 - Math.random());
     }
-    // static choice(choices = [1,2,3], p = new Array(choices.length).fill(1 / choices.length)){
-    //     const acc = accum_sum(...p).map(v => v * 100);
-    //     const pool = new Array(100);
-    //     pool.fill(choices[0], 0, acc[0]);
-    //     for(let i=1;i<choices.length;i++)
-    //         pool.fill(choices[i], acc[i-1], acc[i]);
-    //     return pool[this.int(pool.length)];
-    // }
+    static choice(choices = [1,2,3], p = new Array(choices.length).fill(1 / choices.length)){
+        const acc = accum_sum(p).map(v => v * 100);
+        const pool = new Array(100);
+        pool.fill(choices[0], 0, acc[0]);
+        for(let i=1;i<choices.length;i++)
+            pool.fill(choices[i], acc[i-1], acc[i]);
+        return pool[this.int(pool.length)];
+    }
 }
