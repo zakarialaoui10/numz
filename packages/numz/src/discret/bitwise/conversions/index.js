@@ -1,3 +1,4 @@
+import { mapfun } from 'ziko/math'
 export const base2base = (value, fromBase, toBase) => {
     if (fromBase < 2 || fromBase > 36 || toBase < 2 || toBase > 36)
         throw new TypeError('Base must be between 2 and 36');
