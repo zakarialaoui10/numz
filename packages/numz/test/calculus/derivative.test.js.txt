@@ -1,0 +1,148 @@
+import {describe,expect,it} from "vitest"
+import {
+    derivative,
+    derivative_n,
+    partial_derivative,
+    gradient
+} from "numz/calculus"
+
+describe("derivative",()=>{
+  it("calculates the derivative of x²",()=>{
+    const f=x=>x**2
+    expect(derivative(f,2)).toBeCloseTo(4)
+  })
+
+  it("calculates the derivative of x³",()=>{
+    const f=x=>x**3
+    expect(derivative(f,2)).toBeCloseTo(12)
+  })
+
+  it("calculates the derivative of sin(x)",()=>{
+    expect(derivative(Math.sin,0)).toBeCloseTo(1)
+    expect(derivative(Math.sin,Math.PI/2)).toBeCloseTo(0)
+  })
+
+  it("calculates the derivative of cos(x)",()=>{
+    expect(derivative(Math.cos,0)).toBeCloseTo(0)
+    expect(derivative(Math.cos,Math.PI/2)).toBeCloseTo(-1)
+  })
+
+  it("supports a custom step size",()=>{
+    const f=x=>x**2
+    expect(derivative(f,2,1e-5)).toBeCloseTo(4)
+  })
+
+  it("works with constant functions",()=>{
+    expect(derivative(()=>5,10)).toBeCloseTo(0)
+  })
+})
+
+describe("derivative_n",()=>{
+  it("returns the function for n=0",()=>{
+    const f=x=>x**2
+    expect(derivative_n(f,3,0)).toBe(9)
+  })
+
+  it("calculates the first derivative",()=>{
+    const f=x=>x**3
+    expect(derivative_n(f,2,1)).toBeCloseTo(12)
+  })
+
+  it("calculates the second derivative",()=>{
+    const f=x=>x**3
+    expect(derivative_n(f,2,2,1e-4)).toBeCloseTo(12)
+  })
+
+  it("calculates the third derivative",()=>{
+    const f=x=>x**3
+    expect(derivative_n(f,2,3,1e-4)).toBeCloseTo(6)
+  })
+
+  it("calculates a higher-order derivative",()=>{
+    const f=x=>x**5
+    expect(derivative_n(f,2,4,1e-4)).toBeCloseTo(240)
+  })
+
+  it("returns zero for derivatives above the polynomial degree",()=>{
+    const f=x=>x**2
+    expect(derivative_n(f,2,3,1e-4)).toBeCloseTo(0)
+  })
+})
+
+describe("partial_derivative",()=>{
+  const f=(x,y)=>x**2+3*y**2
+
+  it("calculates the partial derivative with respect to x",()=>{
+    expect(partial_derivative(f,[2,3],0)).toBeCloseTo(4)
+  })
+
+  it("calculates the partial derivative with respect to y",()=>{
+    expect(partial_derivative(f,[2,3],1)).toBeCloseTo(18)
+  })
+
+  it("supports three variables",()=>{
+    const f=(x,y,z)=>x**2+y**3+z**4
+
+    expect(partial_derivative(f,[2,2,2],0)).toBeCloseTo(4)
+    expect(partial_derivative(f,[2,2,2],1)).toBeCloseTo(12)
+    expect(partial_derivative(f,[2,2,2],2)).toBeCloseTo(32)
+  })
+
+  it("supports a custom step size",()=>{
+    const f=(x,y)=>x**2+y**2
+    expect(partial_derivative(f,[3,4],0,1e-5)).toBeCloseTo(6)
+  })
+
+  it("does not mutate the input variables",()=>{
+    const vars=[2,3]
+    partial_derivative(f,vars,0)
+
+    expect(vars).toEqual([2,3])
+  })
+})
+
+describe("gradient",()=>{
+  it("calculates the gradient of a two-variable function",()=>{
+    const f=(x,y)=>x**2+3*y**2
+    const result=gradient(f,[2,3])
+
+    expect(result).toHaveLength(2)
+    expect(result[0]).toBeCloseTo(4)
+    expect(result[1]).toBeCloseTo(18)
+  })
+
+  it("calculates the gradient of a three-variable function",()=>{
+    const f=(x,y,z)=>x**2+y**3+z**4
+    const result=gradient(f,[2,2,2])
+
+    expect(result).toHaveLength(3)
+    expect(result[0]).toBeCloseTo(4)
+    expect(result[1]).toBeCloseTo(12)
+    expect(result[2]).toBeCloseTo(32)
+  })
+
+  it("calculates the gradient of a linear function",()=>{
+    const f=(x,y)=>2*x+3*y
+    expect(gradient(f,[10,20])).toEqual([
+      expect.closeTo(2),
+      expect.closeTo(3)
+    ])
+  })
+
+  it("calculates the gradient of a constant function",()=>{
+    const f=()=>42
+    expect(gradient(f,[1,2,3])).toEqual([
+      expect.closeTo(0),
+      expect.closeTo(0),
+      expect.closeTo(0)
+    ])
+  })
+
+  it("supports a custom step size",()=>{
+    const f=(x,y)=>x**2+y**2
+    const result=gradient(f,[3,4],1e-5)
+
+    expect(result[0]).toBeCloseTo(6)
+    expect(result[1]).toBeCloseTo(8)
+  })
+})
