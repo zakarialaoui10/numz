@@ -3,9 +3,9 @@ export const mean = (...x) => x.reduce((a, b) => a + b) / x.length;
 export const geo_mean = (...x) => (x.reduce((a, b) => a * b)) ** (1/x.length);
 // Quadratic Mean
 export const rms = (...x) => {
-    const n = x.length;
-    return (Math.hypot(...x)/n)**(1/n)
-}
+  const n = x.length;
+  return Math.hypot(...x) / Math.sqrt(n);
+};
 
 export const weighted_mean=(values, weights)=>{
   let sum = 0, sw = 0;
@@ -23,12 +23,14 @@ export const harmonic_mean = (...x) => {
   return x.length / s;
 }
 
-export const power_mean = (X, p) =>{
-  let s = 0, i = 0, l = X.length;
-  for(i=0; i < l; i++) 
-    s+= X[i]**p
-  return (s / l) ** (1 / p);
-}
+export const power_mean = (X, p) => {
+  if (p === 0)
+    return geo_mean(...X);
+  let s = 0;
+  for (let i = 0; i < X.length; i++)
+    s += X[i] ** p;
+  return (s / X.length) ** (1 / p);
+};
 
 export const trimmed_mean = (X, k) =>{
   let a = [...X].sort((a,b)=>a-b).slice(k, X.length - k);
@@ -39,7 +41,7 @@ export const winsorized_mean = (X, k) =>{
   let a = [...X].sort((a,b)=>a-b);
   let low = a[k], high = a[a.length - k - 1];
   a = a.map(x => Math.max(low, Math.min(high, x)));
-  return mean(a);
+  return mean(...a);
 }
 
 export const midrange = (x) =>{
@@ -49,7 +51,7 @@ export const midrange = (x) =>{
 }
 
 export const midhinge = (...x) =>{
-  let a = x.sort((a,b)=>a-b);
+  let a = [...x].sort((a,b)=>a-b);
   let q1 = a[Math.floor((a.length - 1) * 0.25)];
   let q3 = a[Math.floor((a.length - 1) * 0.75)];
   return (q1 + q3) / 2;
@@ -61,7 +63,7 @@ export const iq_mean = (...x) =>{
   let q1 = a[Math.floor((a.length - 1) * 0.25)];
   let q3 = a[Math.floor((a.length - 1) * 0.75)];
   let m = a.filter(x => x >= q1 && x <= q3);
-  return mean(m);
+  return mean(...m);
 }
 
 
