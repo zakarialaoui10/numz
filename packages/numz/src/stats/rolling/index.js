@@ -8,7 +8,8 @@ export const sma = (X, w) =>{
   return r;
 }
 
-export const ema = (X, alpha) =>{
+export const ema = (X, alpha) => {
+  if (X.length === 0) return [];
   let r = [], prev = X[0];
   r.push(prev);
   for (let i = 1; i < X.length; i++) {
@@ -16,7 +17,7 @@ export const ema = (X, alpha) =>{
     r.push(prev);
   }
   return r;
-}
+};
 
 // weightedMovingAverage
 export const wma = (X, weights) =>{
