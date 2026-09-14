@@ -62,8 +62,8 @@ class Complex{
     }
     static fromPolar(z, phi) {
         return new Complex(
-            +(z * cos(phi)).toFixed(13), 
-            +(z * sin(phi)).toFixed(13)
+            +(z * Math.cos(phi)).toFixed(13), 
+            +(z * Math.sin(phi)).toFixed(13)
         );
     }
     
@@ -136,16 +136,22 @@ class Complex{
         return this;
     }
     pow(...c){
-        let {z, phi} = this;
-        for (let i = 0; i < c.length; i++) {
-            if (typeof c[i] === "number") c[i] = new Complex(c[i], 0);
-            z *= Math.exp(c[i].a * Math.log(z) - c[i].b * phi);
-            phi += c[i].b * Math.log(z) + c[i].a * phi;
-        }
-        this.a = z * Math.cos(phi)
-        this.b = z * Math.sin(phi)  
-        return this;
-    }
+  let {z,phi}=this;
+  for(let i=0;i<c.length;i++){
+    if(typeof c[i]==="number") c[i]=new Complex(c[i],0);
+    const r=z;
+    const angle=phi;
+    const exponent=c[i];
+    const logR=Math.log(r);
+    const newZ=Math.exp(exponent.a*logR-exponent.b*angle);
+    const newPhi=exponent.b*logR+exponent.a*angle;
+    z=newZ;
+    phi=newPhi;
+  }
+  this.a=z*Math.cos(phi);
+  this.b=z*Math.sin(phi);
+  return this;
+}
     get expo() {
         return [this.z, this.phi];
     }
@@ -174,7 +180,7 @@ class Complex{
         )
     }
     get tan(){
-        const D=cos(this.a*2)+cosh(this.b*2);
+        const D = Math.cos(this.a*2) + Math.cosh(this.b*2);
         return complex(
             Math.sin(2 * this.a) / D,
             Math.sinh(2 * this.b) / D
@@ -182,12 +188,16 @@ class Complex{
     }
 }
 const complex=(a,b)=>{
-    if((a instanceof Array||ArrayBuffer.isView(a)) && (b instanceof Array||ArrayBuffer.isView(a)))return a.map((n,i)=>complex(a[i],b[i]));
-    if(a.isMatrix?.() && b.isMatrix?.()){
-        if((a.shape[0]!==b.shape[0])||(a.shape[1]!==b.shape[1]))return Error(0)
-        const arr=a.arr.map((n,i)=>complex(a.arr[i],b.arr[i]))
-        return new a.constructor(a.rows,a.cols,...arr)
-    }
-    return new Complex(a,b)
+  if((a instanceof Array||ArrayBuffer.isView(a)) &&
+     (b instanceof Array||ArrayBuffer.isView(b)))
+    return Array.from(a,(n,i)=>complex(n,b[i]));
+
+  if(a.isMatrix?.() && b.isMatrix?.()){
+    if((a.shape[0]!==b.shape[0])||(a.shape[1]!==b.shape[1])) return Error(0)
+    const arr=a.arr.map((n,i)=>complex(a.arr[i],b.arr[i]))
+    return new a.constructor(a.rows,a.cols,...arr)
+  }
+
+  return new Complex(a,b)
 }
 export{complex,Complex}
