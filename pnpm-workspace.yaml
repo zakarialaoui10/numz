@@ -1,0 +1,12 @@
+packages:
+  - "packages/*"
+  - "packages/*/test"
+  - "demo/"
+
+allowBuilds:
+  esbuild: false
+
+# Define a catalog of version ranges.
+catalog:
+  ziko: 2.0.0-beta.10
+  vitest: latest

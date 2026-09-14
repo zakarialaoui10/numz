@@ -1,34 +1,17 @@
 {
-  "name": "numz",
-  "version": "0.10.2",
-  "description": "scientific computing with zikojs",
+  "name": "numz-root",
+  "version": "1.0.0",
+  "description": "",
   "main": "index.js",
-  "type": "module",
-  "exports": {
-    "./*": {
-      "import": "./src/*/index.js"
-    }
-  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "cross-env NODE_ENV=development rollup --config rollup.config.js",
-    "watch": "cross-env NODE_ENV=development rollup --config rollup.config.js -w",
-    "build": "cross-env NODE_ENV=production rollup --config rollup.config.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": [],
   "author": "zakaria elalaoui",
-  "keywords": [
-    "zikojs",
-    "math"
-  ],
   "license": "MIT",
-  "devDependencies": {
-    "@rollup/plugin-commonjs": "^29.0.3",
-    "@rollup/plugin-node-resolve": "^16.0.3",
-    "@rollup/plugin-terser": "^1.0.0",
-    "cross-env": "^10.1.0",
-    "rollup": "^4.63.1"
-  },
+  "type": "module",
   "dependencies": {
-    "ziko": "^2.0.0-alpha.0"
+    "vitest": "^5.0.0",
+    "ziko": "catalog:"
   }
 }
