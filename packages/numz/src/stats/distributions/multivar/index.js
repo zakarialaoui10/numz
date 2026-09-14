@@ -24,7 +24,12 @@ export const dist_multivariate_normal = (xArray, meanArray, covMatrix) => {
     const diff = xArray.map((xi, i) => xi - meanArray[i]);
     const covInv = inv(covMatrix);
     const exponent = -0.5 * diff.reduce((sum, _, i) =>
-        sum + diff[i] * (covInv[i][0] * diff[0] + covInv[i][1] * diff[1] || 0), 0);
+        sum + diff[i] * covInv[i].reduce(
+            (rowSum, value, j) => rowSum + value * diff[j],
+            0,
+        ),
+        0
+    );
     const denom = Math.sqrt((2 * Math.PI) ** n * det(covMatrix));
     return Math.exp(exponent) / denom;
 };

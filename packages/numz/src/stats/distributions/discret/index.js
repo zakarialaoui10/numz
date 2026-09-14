@@ -1,6 +1,3 @@
-// ------------------------------
-// Discrete Distributions
-// ------------------------------
 export const dist_binomial = (k, n, p) => {
     if (k < 0 || k > n) return 0;
     const comb = (n, k) => {
