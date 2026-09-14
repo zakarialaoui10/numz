@@ -56,10 +56,10 @@ export const nthr = (...x) => {
     if(typeof n !== 'number') throw Error('nthr expects a real number n');
     return mapfun(
         x => {
-            if(x.isComplex?.()) return new x.constructor({z: x.z ** (1/n), phi: x.phi / n});
-            if(x<0) return n %2 ===2 
+            if(x.isComplex?.()) return new x.constructor({z: x.z ** (1/n), phi: x.phi / n}); 
+            if(x<0) return n %2 ===0
                 ? complex(0, (-x)**(1/n)).toFixed(PRECESION)
-                : + (-1 * (-x)**(1/n)).toFixed(PRECESION)                
+                : +(-1*(-x)**(1/n)).toFixed(PRECESION)              
             return + (x**(1/n)).toFixed(PRECESION)
         },
         ...x
@@ -67,23 +67,23 @@ export const nthr = (...x) => {
 }
 
 export const croot = (...x) =>{
-    const c = x.pop()
-    if(!c.isComplex?.()) throw Error('croot expect Complex number as root')
-    return mapfun(
-        x => {
-            if(typeof x === 'number') x = new c.constructor(x, 0);
-            const {a : c_a, b : c_b} = c;
-            const {z, phi} = x;
-            const D = Math.hypot(c_a, c_b);
-            const A = Math.exp((Math.log(z)*c_a + phi*c_b)/D);
-            const B = (phi*c_a - Math.log(z)*c_b)/D
-            return new c.constructor(
-                A * Math.cos(B),
-                A * Math.sin(B)
-            ).toFixed(PRECESION)
-        },
-        ...x
-    )
+  const c=x.pop()
+  if(!c.isComplex?.()) throw Error('croot expect Complex number as root')
+  return mapfun(
+    x=>{
+      if(typeof x==="number") x=new c.constructor(x,0)
+      const D=Math.hypot(c.a,c.b)
+      const z=Math.hypot(x.a,x.b)
+      const phi=Math.atan2(x.b,x.a)
+      const A=Math.exp((Math.log(z)*c.a+phi*c.b)/D**2)
+      const B=(phi*c.a-Math.log(z)*c.b)/D**2
+      return new c.constructor({
+        z:A,
+        phi:B
+      }).toFixed(PRECESION)
+    },
+    ...x
+  )
 }
 
 export const exp = (...x) => mapfun(
@@ -366,7 +366,7 @@ export const sig = (...x) => mapfun(
         if(x?.isComplex){
 
         } 
-        return + 1/(1 + Math.exp(-x)).toFixed(PRECESION)
+        return +(1/(1+Math.exp(-x))).toFixed(PRECESION)
     },
     ...x
 )
